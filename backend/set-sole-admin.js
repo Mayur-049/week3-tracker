@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const User = require('./models/User');
 const connectDB = require('./config/db');
 
-const targetEmail = 'mayurpatel85516@gmail.com';
+const targetEmail = 'mayurpatel85517@gmail.com';
 
 const setSoleAdmin = async () => {
     try {
