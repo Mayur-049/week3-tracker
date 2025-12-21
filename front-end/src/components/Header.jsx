@@ -6,7 +6,7 @@ function Header({ activeSection, setActiveSection, user, onLogout }) {
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow">
       <div className="container-fluid">
         <a className="navbar-brand fw-bold fs-5" href="#home" onClick={(e) => { e.preventDefault(); setActiveSection('home'); }}>
-           Expense Tracker- Mayur Devendrabhai patel
+          Expense Tracker- Mayur Devendrabhai patel
         </a>
         <button
           className="navbar-toggler"
@@ -57,15 +57,17 @@ function Header({ activeSection, setActiveSection, user, onLogout }) {
                 Project
               </button>
             </li>
-            <li className="nav-item">
-              <button
-                className={`nav-link btn btn-link text-decoration-none ${activeSection === 'users' ? 'active text-white' : 'text-secondary'}`}
-                onClick={() => setActiveSection('users')}
-                style={{ cursor: 'pointer' }}
-              >
-                Users (Backend API)
-              </button>
-            </li>
+            {user && user.role === 'admin' && (
+              <li className="nav-item">
+                <button
+                  className={`nav-link btn btn-link text-decoration-none ${activeSection === 'users' ? 'active text-white' : 'text-secondary'}`}
+                  onClick={() => setActiveSection('users')}
+                  style={{ cursor: 'pointer' }}
+                >
+                  Manage Users (Admin)
+                </button>
+              </li>
+            )}
           </ul>
           {user && (
             <div className="d-flex align-items-center ms-3">

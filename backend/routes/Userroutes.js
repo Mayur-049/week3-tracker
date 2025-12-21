@@ -12,15 +12,15 @@ router.post('/login', async (req, res) => {
     try {
         const normalizedEmail = (email || '').toLowerCase().trim();
         const user = await User.findOne({ email: normalizedEmail });
-    if (!user) return res.status(400).json({ message: 'User not found' });
+        if (!user) return res.status(400).json({ message: 'User not found' });
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
         const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });
         res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
-  } catch (err) {
-    res.status(500).json({ message: 'Server error' });
-  }
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
 });
 
 
@@ -37,7 +37,7 @@ router.post('/register', async (req, res) => {
             console.log('❌ User already exists');
             return res.status(400).json({ msg: 'User with this email or mobile already exists.' });
         }
-        
+
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -52,7 +52,7 @@ router.post('/register', async (req, res) => {
         await user.save();
         console.log('✅ User saved to database:', user._id);
 
-        res.status(201).json({ 
+        res.status(201).json({
             msg: 'User registered successfully',
             user: {
                 id: user._id,
@@ -82,10 +82,20 @@ router.post('/', async (req, res) => {
 });
 
 
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
+        // Fetch the current user to check role
+        const currentUser = await User.findById(req.user.id);
+        if (!currentUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        if (currentUser.role !== 'admin') {
+            return res.status(403).json({ message: 'Access denied. Admin only.' });
+        }
+
         const users = await User.find().select('-password');
-        console.log(`📋 Retrieved ${users.length} users from database`);
+        console.log(`📋 Retrieved ${users.length} users from database (Admin Access)`);
         res.json(users);
     } catch (err) {
         console.error('❌ Error retrieving users:', err.message);
@@ -97,11 +107,11 @@ router.get('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-        
+
         if (!updatedUser) {
             return res.status(404).json({ msg: 'User not found' });
         }
-        
+
         res.json(updatedUser);
     } catch (err) {
         console.error(err.message);
@@ -112,11 +122,11 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const deletedUser = await User.findByIdAndDelete(req.params.id);
-        
+
         if (!deletedUser) {
             return res.status(404).json({ msg: 'User not found' });
         }
-        
+
         res.json({ message: "User successfully removed" });
     } catch (err) {
         console.error(err.message);

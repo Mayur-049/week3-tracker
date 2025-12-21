@@ -19,15 +19,24 @@ const Users = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`${API_URL}/api/User`);
-        
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/api/User`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.status === 403 || response.status === 401) {
+          throw new Error('Access Denied: You do not have permission to view this data. (Admin role required)');
+        }
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
         console.log('API Response:', data);
-        
+
         if (Array.isArray(data)) {
           setUsers(data);
           setError(null);
@@ -36,7 +45,7 @@ const Users = () => {
         }
       } catch (error) {
         console.error('❌ Error fetching users:', error);
-        setError(error.message || 'Failed to fetch users from server. Make sure the backend is running.');
+        setError(error.message || 'Failed to fetch users from server.');
         setUsers([]);
         setToast({
           type: 'error',
@@ -53,7 +62,12 @@ const Users = () => {
   const handleUserAdded = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/api/User`);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/User`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         if (Array.isArray(data)) {
@@ -87,7 +101,7 @@ const Users = () => {
   };
 
   const handleUpdate = (updatedUser, message) => {
-    setUsers(users.map(user => 
+    setUsers(users.map(user =>
       user._id === updatedUser._id ? updatedUser : user
     ));
     setEditingUser(null);
@@ -104,8 +118,12 @@ const Users = () => {
   const confirmDelete = async (userId) => {
     try {
       setDeleteLoading(true);
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/api/User/${userId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
 
       const data = await response.json();
@@ -159,20 +177,20 @@ const Users = () => {
   return (
     <div className="users-container">
       {toast && (
-        <Toast 
-          message={toast.message} 
-          type={toast.type} 
-          onClose={() => setToast(null)} 
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
         />
       )}
 
-      <AddUser 
+      <AddUser
         onUserAdded={handleUserAdded}
         onShowToast={showToast}
       />
-      
+
       <h2 className="mb-4">Users List (From Backend API)</h2>
-      
+
       {users.length === 0 ? (
         <p className="text-muted">No users found</p>
       ) : (
@@ -189,7 +207,7 @@ const Users = () => {
                     <strong>Role:</strong> <span className="badge bg-info">{user.role}</span>
                   </p>
                   <div className="d-flex gap-2">
-                    <button 
+                    <button
                       className="btn btn-sm btn-primary flex-fill"
                       onClick={() => handleEdit(user)}
                       disabled={deleteLoading}
@@ -197,7 +215,7 @@ const Users = () => {
                     >
                       <span className="me-1">✏️</span> Edit
                     </button>
-                    <button 
+                    <button
                       className="btn btn-sm btn-danger flex-fill"
                       onClick={() => handleDelete(user)}
                       disabled={deleteLoading}
@@ -214,7 +232,7 @@ const Users = () => {
       )}
 
       {editingUser && (
-        <EditUser 
+        <EditUser
           user={editingUser}
           onClose={() => setEditingUser(null)}
           onUpdate={handleUpdate}
@@ -222,14 +240,14 @@ const Users = () => {
       )}
 
       {deletingUser && (
-        <DeleteConfirmModal 
+        <DeleteConfirmModal
           user={deletingUser}
           onClose={() => setDeletingUser(null)}
           onConfirm={confirmDelete}
           isLoading={deleteLoading}
         />
       )}
-      
+
       <div className="mt-4 p-3 bg-light rounded">
         <small className="text-muted">
           ✅ Data successfully fetched from Backend API (/api/User)
