@@ -72,7 +72,7 @@ function Header({ activeSection, setActiveSection, user, onLogout }) {
           {user && (
             <div className="d-flex align-items-center ms-3">
               <span className="text-white me-3">
-                👤 {user.name}
+                👤 {user.name} <small className="text-muted" style={{ fontSize: '0.8em' }}>({user.role})</small>
               </span>
               <button
                 className="btn btn-outline-light btn-sm"
