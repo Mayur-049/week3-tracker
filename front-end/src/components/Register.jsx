@@ -13,6 +13,7 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
   });
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [validationErrors, setValidationErrors] = useState({});
 
   const validateForm = () => {
@@ -104,27 +105,7 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
         throw new Error(data.msg || data.message || 'Registration failed');
       }
 
-      const loginResponse = await fetch(`${API_URL}/api/User/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password
-        })
-      });
-
-      const loginData = await loginResponse.json();
-
-      if (loginResponse.ok) {
-        localStorage.setItem('token', loginData.token);
-        localStorage.setItem('user', JSON.stringify(loginData.user));
-
-        if (onRegister) {
-          onRegister(loginData.user);
-        }
-      }
+      setSuccessMessage('Registration successful! Redirecting to login...');
 
       setFormData({
         name: '',
@@ -134,6 +115,13 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
         password: '',
         confirmPassword: ''
       });
+
+      setTimeout(() => {
+        if (onSwitchToLogin) {
+          onSwitchToLogin();
+        }
+      }, 2000);
+
     } catch (error) {
       console.error('❌ Registration error:', error);
       setErrorMessage(error.message || 'Failed to register');
@@ -152,6 +140,17 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
                 <h2 className="fw-bold text-primary">📝 Register</h2>
                 <p className="text-muted">Create a new account</p>
               </div>
+
+              {successMessage && (
+                <div className="alert alert-success alert-dismissible fade show" role="alert">
+                  {successMessage}
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setSuccessMessage('')}
+                  ></button>
+                </div>
+              )}
 
               {errorMessage && (
                 <div className="alert alert-danger alert-dismissible fade show" role="alert">
