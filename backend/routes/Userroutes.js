@@ -46,7 +46,8 @@ router.post('/register', async (req, res) => {
             mobile,
             address,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            role: 'user' // Force role to be 'user' for public registration
         });
 
         await user.save();
