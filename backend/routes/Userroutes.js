@@ -23,8 +23,6 @@ router.post('/login', async (req, res) => {
     }
 });
 
-
-
 router.post('/register', async (req, res) => {
     const { name, mobile, address, email, password } = req.body;
 
@@ -47,7 +45,7 @@ router.post('/register', async (req, res) => {
             address,
             email,
             password: hashedPassword,
-            role: 'user' // Force role to be 'user' for public registration
+            role: 'user'
         });
 
         await user.save();
@@ -69,7 +67,6 @@ router.post('/register', async (req, res) => {
     }
 });
 
-
 router.post('/', async (req, res) => {
     try {
         console.log('📝 Create user request:', req.body);
@@ -82,10 +79,8 @@ router.post('/', async (req, res) => {
     }
 });
 
-
 router.get('/', auth, async (req, res) => {
     try {
-        // Fetch the current user to check role
         const currentUser = await User.findById(req.user.id);
         if (!currentUser) {
             return res.status(404).json({ message: 'User not found' });
@@ -103,7 +98,6 @@ router.get('/', auth, async (req, res) => {
         res.status(500).json({ message: 'Server Error retrieving users.' });
     }
 });
-
 
 router.put('/:id', async (req, res) => {
     try {
@@ -135,11 +129,9 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-
 router.get('/test', (req, res) => {
     res.send('User API test route running!');
 });
-
 
 router.get('/protected', auth, async (req, res) => {
     try {

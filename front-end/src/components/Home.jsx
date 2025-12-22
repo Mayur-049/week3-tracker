@@ -77,7 +77,7 @@ function Home() {
       }
 
       setExpenses([data.resource, ...expenses]);
-      
+
       setTitle('');
       setCategory('Food');
       setAmount('');
@@ -131,25 +131,6 @@ function Home() {
   };
 
   const totalAmount = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-
-  const cardsData = [
-    {
-      id: 1,
-      title: 'Groceries Shopping',
-      description: 'Weekly grocery shopping at the market.',
-      category: 'Food',
-      amount: 1250.5,
-      date: '2025-12-01'
-    },
-    {
-      id: 2,
-      title: 'Gas Station',
-      description: 'Fuel expense for the car.',
-      category: 'Transportation',
-      amount: 320.0,
-      date: '2025-12-05'
-    }
-  ];
 
   return (
     <section className={`home-section py-5 ${isDarkMode ? 'bg-dark text-light' : 'bg-light'}`}>
@@ -312,26 +293,6 @@ function Home() {
                 ))}
               </div>
             )}
-          </div>
-        </div>
-
-        <div className="mt-5">
-          <h3 className="mb-4">🎯 Sample Expenses</h3>
-          <div className="row g-4">
-            {cardsData.map((card) => (
-              <div key={card.id} className="col-md-6">
-                <Card
-                  id={card.id}
-                  title={card.title}
-                  description={card.description}
-                  category={card.category}
-                  amount={card.amount}
-                  date={card.date}
-                  isDarkMode={isDarkMode}
-                  onDelete={() => {}}
-                />
-              </div>
-            ))}
           </div>
         </div>
       </div>
