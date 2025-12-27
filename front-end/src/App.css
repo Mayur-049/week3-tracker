@@ -425,6 +425,8 @@ footer strong {
   margin: 0;
 }
 
+/* .container, .row, .col definitions removed to avoid conflicts with Bootstrap */
+/* Responsive container adjustments can be handled by Bootstrap */
 .products-hero__meta {
   display: flex;
   gap: var(--spacing-sm);
